@@ -15,7 +15,7 @@ public class TodoResponse {
     LocalDateTime createdAt;
     LocalDateTime modifiedAt;
 
-    public static TodoResponse fromTodo(Todo todo){ //명확한 의미전달 ...
+    public static TodoResponse fromTodo(Todo todo){ //명확한 의미전달 ... from 이라고만 해도 좋을듯 
         TodoResponse response = new TodoResponse();
 
         response.todoId = todo.getId();
