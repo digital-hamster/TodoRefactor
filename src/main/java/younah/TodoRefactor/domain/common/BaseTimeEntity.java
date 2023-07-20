@@ -1,10 +1,7 @@
 package younah.TodoRefactor.domain.common;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -15,8 +12,8 @@ import java.time.LocalDateTime;
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public class BaseTime {
-        @CreatedDate //인식 안먹는뎁쇼 ...
+public class BaseTimeEntity {
+        @CreatedDate
         @Column(name = "created_at")
         private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -24,11 +21,14 @@ public class BaseTime {
         @Column(name = "modified_at")
         private LocalDateTime modifiedAt;
 
-        @Column(name= "deleted_at")
-        private LocalDateTime deletedAt;
 
+        @PrePersist
+        void prePersist() {
+                this.createdAt = LocalDateTime.now();
+        }
 
-        public void updateModifiedAt(){
-            this.modifiedAt = LocalDateTime.now();
+        @PreUpdate
+        void preUpdate() {
+                this.modifiedAt = LocalDateTime.now();
         }
 }

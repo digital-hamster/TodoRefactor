@@ -1,8 +1,9 @@
 package younah.TodoRefactor.domain.todo.controller;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import younah.TodoRefactor.domain.todo.dto.TodoDto;
 import younah.TodoRefactor.domain.todo.response.TodoResponse;
@@ -17,14 +18,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/todo")
 @RequiredArgsConstructor
+@Validated
 public class TodoController {
 
     private final TodoService todoService;
 
     @PostMapping
-    public ResponseEntity saveTodo(@RequestBody TodoDto todoDto){
+    public TodoResponse createTodo(@NotNull @RequestBody TodoDto todoDto){
         String content = todoDto.getContent();
-        ResponseEntity response = todoService.createTodo(content);
+        TodoResponse response = todoService.createTodo(content);
 
         return response;
     }
@@ -34,33 +36,29 @@ public class TodoController {
         return todoService.getTodos();
     }
 
-    @GetMapping("/{todo_id}")
-    public ResponseEntity getTodo(@PathVariable("todo_id") long todoId){
+    @GetMapping("/{todoId}")
+    public TodoResponse getTodo(@PathVariable("todoId") long todoId){
         return todoService.getTodo(todoId);
     }
 
-
-
-    @PatchMapping("/completion/{todo_id}") //부분적 변경(patch)
-    public void todoDone(@PathVariable("todo_id") long todoId){
-        todoService.todoDone(todoId);
+    @PatchMapping("/complete/{todoId}")
+    public void todoDone(@PathVariable("todoId") long todoId){
+        todoService.todoComplete(todoId);
     }
 
-
-    @PatchMapping("/withdraw/{todo_id}")//부분적 변경
-    public void todoWithDraw(@PathVariable("todo_id") long todoId){
-        todoService.todoWithDraw(todoId);
+    @PatchMapping("/setback/{todoId}")
+    public void todoWithDraw(@PathVariable("todoId") long todoId){
+        todoService.todoSetBack(todoId);
     }
 
-    //내용을 수정하는 api
-    @PatchMapping("/{todo_id}")//부분적 변경
-    public ResponseEntity updateTodo(@PathVariable("todo_id") long todoId, @RequestBody TodoDto todoDto){
-        ResponseEntity response =  todoService.updateContent(todoId, todoDto);
+    @PatchMapping("/{todoId}")
+    public TodoResponse updateTodo(@PathVariable("todoId") long todoId, @RequestBody TodoDto todoDto){
+        TodoResponse response =  todoService.updateContent(todoId, todoDto);
         return response;
     }
 
-    @DeleteMapping("{todo_id}")
-    public void deleteTodo(@PathVariable("todo_id") long todoId){
+    @DeleteMapping("{todoId}")
+    public void deleteTodo(@PathVariable("todoId") long todoId){
         todoService.deleteTodo(todoId);
     }
 }

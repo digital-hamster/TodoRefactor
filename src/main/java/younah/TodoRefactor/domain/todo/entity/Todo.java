@@ -1,16 +1,21 @@
 package younah.TodoRefactor.domain.todo.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import younah.TodoRefactor.domain.common.BaseTime;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+import younah.TodoRefactor.domain.common.BaseTimeEntity;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-public class Todo extends BaseTime {
+@NoArgsConstructor //생성자를 만들기 위한 기본 생성자 추가
+@SQLDelete(sql = "UPDATE todo SET deleted = true, deleted_at = NOW() WHERE id = ?")
+@Where(clause = "deleted = false")
+public class Todo extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -18,12 +23,15 @@ public class Todo extends BaseTime {
     @Column
     private String content;
 
-    @Column
-    private boolean isDone; //미완료:false / 완료:true
-
     @Enumerated(value = EnumType.STRING)
     @Column
     private TodoStatus status = TodoStatus.TODO_BEFORE;
+
+    //TODO SOFT DELETE
+    private final boolean deleted = Boolean.FALSE;
+
+    @Column(name= "deleted_at")
+    private LocalDateTime deletedAt;
 
 
     @Getter
@@ -32,46 +40,31 @@ public class Todo extends BaseTime {
         TODO_BEFORE("활동 전"),
         TODO_DONE("활동 완료");
 
-        private String status;
-
-        TodoStatus(String status) {
-            this.status = status;
-        }
+        private final String status;
     }
 
-    //TODO) 정적 팩토리 메소드(컨벤션)
-    public static Todo from(String content) { //@Setter 사용금지!
-        Todo todo = new Todo();
+    //TODO 생성자
+    public Todo(String content) {
+        this.content = content;
+    }
+
+
+    public static Todo from(String content) {
+        Todo todo = new Todo(content);
         todo.content = content;
         return todo;
     }
 
-
-    //TODO) Validation
-    public void todoValidation(@NotNull Todo todo){
-        if(todo.getId()==0){
-            throw new IllegalArgumentException("존재하지 않는 todo입니다.");
-        }
-
-        if(todo.getContent().length()==0){
-            throw new IllegalArgumentException("todo의 내용을 입력해 주세요.");
-        }
-    }
-
     //TODO) 내부로직
-    public void done(){
-        this.isDone = true;
+    public void complete(){
+        //이게 불가능할 상황이 뭐가 있지? ... 없음. 예외 꾸역꾸역 넣어보고 싶었는데 ...
         this.status = TodoStatus.TODO_DONE;
-        updateModifiedAt();
     }
 
-    public void withDraw(){
-        this.isDone = false;
+    public void setBack(){
         this.status = TodoStatus.TODO_BEFORE;
-        updateModifiedAt();
     }
     public void updateContent(String content){
         this.content = content;
-        updateModifiedAt();
     }
 }
