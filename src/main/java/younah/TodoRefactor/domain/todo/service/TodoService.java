@@ -1,13 +1,15 @@
 package younah.TodoRefactor.domain.todo.service;
 
+//import younah.TodoRefactor.domain.todo.response.TodoResponse;
+//import younah.TodoRefactor.domain.todo.dto.TodoDto;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import younah.TodoRefactor.domain.todo.dto.TodoDto;
+import younah.TodoRefactor.domain.todo.controller.TodoController;
 import younah.TodoRefactor.domain.todo.entity.Todo;
 import younah.TodoRefactor.domain.todo.repository.TodoRepository;
-import younah.TodoRefactor.domain.todo.response.TodoResponse;
+
 import org.springframework.transaction.annotation.Transactional;
 import younah.TodoRefactor.global.exception.BusinessLogicException;
 import younah.TodoRefactor.global.exception.ExceptionCode;
@@ -23,30 +25,30 @@ public class TodoService {
     private final TodoRepository todoRepo;
 
     @Transactional
-    public TodoResponse createTodo(String content) {
+    public TodoController.TodoResponse createTodo(String content) {
 
         Todo todo = Todo.from(content);
         todoRepo.save(todo);
 
-        return TodoResponse.from(todo);
+        return TodoController.TodoResponse.from(todo);
     }
 
 
     @Transactional(readOnly = true)
-    public TodoResponse getTodo(long todoId) {
+    public TodoController.TodoResponse getTodo(long todoId) {
         Todo targetTodo = todoRepo.findById(todoId).orElseThrow(() -> new IllegalStateException("존재하지 않는 todo입니다."));
 
-        return TodoResponse.from(targetTodo);
+        return TodoController.TodoResponse.from(targetTodo);
     }
 
 
     @Transactional(readOnly = true)
-    public List<TodoResponse> getTodos() {
+    public List<TodoController.TodoResponse> getTodos() {
         List<Todo> todos = todoRepo.findAll(Sort.by("id").descending());
 
 
-        List<TodoResponse> todoResponses = todos.stream()
-                .map(TodoResponse::from)
+        List<TodoController.TodoResponse> todoResponses = todos.stream()
+                .map(TodoController.TodoResponse::from)
                 .collect(Collectors.toList());
 
     return todoResponses;
@@ -66,13 +68,13 @@ public class TodoService {
     }
 
     @Transactional
-        public TodoResponse updateContent(long todoId, TodoDto todoDto){
+        public TodoController.TodoResponse updateContent(long todoId, TodoController.TodoDto todoDto){
             Todo targetTodo = todoRepo.findById(todoId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.TODO_NOT_EXSIST));
 
-                targetTodo.updateContent(todoDto.getContent());
+                targetTodo.updateContent(todoDto.content());
                 todoRepo.save(targetTodo);
 
-        return TodoResponse.from(targetTodo);
+        return TodoController.TodoResponse.from(targetTodo);
 
         }
 
