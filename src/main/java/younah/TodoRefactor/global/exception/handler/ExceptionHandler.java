@@ -16,6 +16,6 @@ public class ExceptionHandler {
                 .status(ex.getExceptionCode().getCode())
                 .body(ex.getExceptionCode().getMessage());
 
-        return response;
+    return response;
     }
 }

@@ -36,7 +36,7 @@ public class TodoService {
 
     @Transactional(readOnly = true)
     public TodoController.TodoResponse getTodo(long todoId) {
-        Todo targetTodo = todoRepo.findById(todoId).orElseThrow(() -> new IllegalStateException("존재하지 않는 todo입니다."));
+        Todo targetTodo = todoRepo.findById(todoId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.TODO_NOT_EXSIST));
 
         return TodoController.TodoResponse.from(targetTodo);
     }
@@ -46,10 +46,9 @@ public class TodoService {
     public List<TodoController.TodoResponse> getTodos() {
         List<Todo> todos = todoRepo.findAll(Sort.by("id").descending());
 
-
-        List<TodoController.TodoResponse> todoResponses = todos.stream()
-                .map(TodoController.TodoResponse::from)
-                .collect(Collectors.toList());
+            List<TodoController.TodoResponse> todoResponses = todos.stream()
+                    .map(TodoController.TodoResponse::from)
+                    .collect(Collectors.toList());
 
     return todoResponses;
     }
@@ -58,23 +57,24 @@ public class TodoService {
     @Transactional
     public void  todoComplete(long todoId){
         Todo targetTodo = todoRepo.findById(todoId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.TODO_NOT_EXSIST));
-        targetTodo.complete();
+            targetTodo.complete();
+            todoRepo.save(targetTodo);
     }
 
     @Transactional
     public void todoSetBack(long todoId){
         Todo targetTodo = todoRepo.findById(todoId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.TODO_NOT_EXSIST));
-        targetTodo.setBack();
+            targetTodo.setBack();
+            todoRepo.save(targetTodo);
     }
 
     @Transactional
-        public TodoController.TodoResponse updateContent(long todoId, TodoController.TodoDto todoDto){
-            Todo targetTodo = todoRepo.findById(todoId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.TODO_NOT_EXSIST));
+    public TodoController.TodoResponse updateContent(long todoId, TodoController.TodoDto todoDto){
+        Todo targetTodo = todoRepo.findById(todoId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.TODO_NOT_EXSIST));
+            targetTodo.updateContent(todoDto.content());
+            todoRepo.save(targetTodo);
 
-                targetTodo.updateContent(todoDto.content());
-                todoRepo.save(targetTodo);
-
-        return TodoController.TodoResponse.from(targetTodo);
+    return TodoController.TodoResponse.from(targetTodo);
 
         }
 
