@@ -55,26 +55,29 @@ public class TodoService {
 
 
     @Transactional
-    public void  todoComplete(long todoId){
-        Todo targetTodo = todoRepo.findById(todoId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.TODO_NOT_EXSIST));
+    public void  todoComplete(long todoId){ // 이름 바꾸랫는데 안바꿈 ㅠㅜ todoComplete -> complete 나머지도 동일
+        Todo targetTodo = todoRepo.findById(todoId)
+            .orElseThrow(() -> new BusinessLogicException(ExceptionCode.TODO_NOT_EXSIST)); // 한줄띄워주셈
             targetTodo.complete();
             todoRepo.save(targetTodo);
     }
 
     @Transactional
     public void todoSetBack(long todoId){
-        Todo targetTodo = todoRepo.findById(todoId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.TODO_NOT_EXSIST));
-            targetTodo.setBack();
-            todoRepo.save(targetTodo);
+        Todo targetTodo = todoRepo.findById(todoId).
+            orElseThrow(() -> new BusinessLogicException(ExceptionCode.TODO_NOT_EXSIST));
+        targetTodo.setBack();
+        todoRepo.save(targetTodo);
     }
 
     @Transactional
     public TodoController.TodoResponse updateContent(long todoId, TodoController.TodoDto todoDto){
-        Todo targetTodo = todoRepo.findById(todoId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.TODO_NOT_EXSIST));
-            targetTodo.updateContent(todoDto.content());
-            todoRepo.save(targetTodo);
+        Todo targetTodo = todoRepo.findById(todoId)
+            .orElseThrow(() -> new BusinessLogicException(ExceptionCode.TODO_NOT_EXSIST));
+        targetTodo.updateContent(todoDto.content());
+        todoRepo.save(targetTodo);
 
-    return TodoController.TodoResponse.from(targetTodo);
+    return TodoController.TodoResponse.from(targetTodo); // 컨트롤러가 여기 왜 있어요 서비스는 컨트롤러를 몰라야됨
 
         }
 
