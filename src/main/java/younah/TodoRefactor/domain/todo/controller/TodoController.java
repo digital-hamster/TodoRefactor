@@ -1,7 +1,8 @@
 package younah.TodoRefactor.domain.todo.controller;
 
-import younah.TodoRefactor.domain.todo.entity.Todo;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import younah.TodoRefactor.domain.todo.entity.Todo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ public class TodoController {
     private final TodoService todoService;
 
     @PostMapping
-    TodoResponse createTodo(@NotNull @RequestBody TodoDto todoDto){
+    TodoResponse createTodo(@NotNull @RequestBody TodoDto todoDto){ //TODO) notBlank 해결하기
         String content = todoDto.content();
         TodoResponse response = todoService.createTodo(content);
 

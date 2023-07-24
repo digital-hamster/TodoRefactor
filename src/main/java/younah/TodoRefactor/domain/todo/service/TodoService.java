@@ -40,18 +40,14 @@ public class TodoService {
         return TodoController.TodoResponse.from(targetTodo);
     }
 
-
-    //ㄴ> deletedAt < 이 null인지 아닌지
-    //로직에서 쓸 때 isDeleted(){
-		//return deletat != null //이런 식으로 ~하기
-
     @Transactional(readOnly = true)
     public List<TodoController.TodoResponse> getTodos() {
         List<Todo> todos = todoRepo
                 .findAll(Sort.by("id")
                 .descending());
 
-        List<TodoController.TodoResponse> todoResponses = todos.stream()
+
+        List<TodoController.TodoResponse> todoResponses = isDeleted(todos).stream()
                 .map(TodoController.TodoResponse::from)
                 .collect(Collectors.toList());
 
@@ -97,6 +93,14 @@ public class TodoService {
 
         targetTodo.remove();
         todoRepo.save(targetTodo);
+    }
+
+    //entity를 거치는 메소드는 직접적으로 db의 접근이 있고, 그 값을 변경하는 것들만 넣는거라고 .. 생각됨
+    //조회를 걸러주는 건 서비스에 있어도 되는 거 아닐까?
+    public List<Todo> isDeleted(List<Todo> todos) {
+        return todos.stream()
+                .filter(todo -> todo.getDeletedAt() == null)
+                .collect(Collectors.toList());
     }
 
 }

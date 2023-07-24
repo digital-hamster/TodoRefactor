@@ -10,6 +10,8 @@ import org.hibernate.annotations.Where;
 import younah.TodoRefactor.domain.common.BaseTimeEntity;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -19,7 +21,7 @@ import java.time.LocalDateTime;
 public class Todo extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column
     private String content;
@@ -70,4 +72,14 @@ public class Todo extends BaseTimeEntity {
     public void update(String content){
         this.content = content;
     }
+
+    public static List<Todo> isDeleted(List<Todo> todos) {
+        return todos.stream()
+                .filter(todo -> todo.getDeletedAt() != null)
+                .collect(Collectors.toList());
+    }
+
+    //ㄴ> deletedAt < 이 null인지 아닌지
+    //로직에서 쓸 때 isDeleted(){
+    //return deletat != null //이런 식으로 ~하기
 }
