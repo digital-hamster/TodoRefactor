@@ -5,8 +5,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 import younah.TodoRefactor.domain.common.BaseTimeEntity;
 
 import java.time.LocalDateTime;
@@ -16,8 +14,6 @@ import java.util.stream.Collectors;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-//@SQLDelete(sql = "UPDATE todo SET deleted = true, deleted_at = NOW() WHERE id = ?")
-//@Where(clause = "deleted = false")
 public class Todo extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -73,13 +69,4 @@ public class Todo extends BaseTimeEntity {
         this.content = content;
     }
 
-    public static List<Todo> isDeleted(List<Todo> todos) {
-        return todos.stream()
-                .filter(todo -> todo.getDeletedAt() != null)
-                .collect(Collectors.toList());
-    }
-
-    //ㄴ> deletedAt < 이 null인지 아닌지
-    //로직에서 쓸 때 isDeleted(){
-    //return deletat != null //이런 식으로 ~하기
 }
