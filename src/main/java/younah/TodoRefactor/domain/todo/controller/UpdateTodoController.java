@@ -20,7 +20,7 @@ class UpdateTodoController {
 
     private final UpdateTodoService service;
 
-    @PatchMapping("/{todoId}")
+    @PatchMapping("/{todoId}") // put 메서드로 바꾸기
     Response updateTodo(@RequestBody Request request,
                         @PathVariable long todoId){
 
@@ -44,7 +44,7 @@ class UpdateTodoController {
         }
     }
 
-    public record Response(
+    public record Response( // 응답이 꼭 필요할까?
             Long id,
             String content,
             Todo.TodoStatus status

@@ -21,13 +21,11 @@ public class GetTodosService {
 
     @Transactional(readOnly = true)
     public List<TodoDto> getTodos() {
-        List<Todo> todos = todoRepo
-                .findAll(Sort.by("id")
-                        .descending());
+        List<Todo> todos = todoRepo.findAll(Sort.by("id").descending());
 
-        return isDeleted(todos).stream()
-                .map(TodoDto::fromEntity)
-                .collect(Collectors.toList());
+        return todos.stream()
+            .map(TodoDto::fromEntity)
+            .toList();
     }
 
 

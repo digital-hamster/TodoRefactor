@@ -22,6 +22,6 @@ public class DeleteTodoService {
         targetTodo.remove();
         todoRepo.save(targetTodo);
 
-        return TodoDto.fromEntity(targetTodo);
+        return TodoDto.fromEntity(targetTodo); // 삭제한걸 왜 다시 넘기는가?
     }
 }

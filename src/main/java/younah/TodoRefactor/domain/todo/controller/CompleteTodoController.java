@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.RestController;
 import younah.TodoRefactor.domain.todo.service.CompleteTodoService;
 
 @RestController
-@RequestMapping("/todos")
+@RequestMapping("/todos/{todoId}/complete") // todoId가 먼저입니다.
 @RequiredArgsConstructor
 public class CompleteTodoController {
     private final CompleteTodoService service;
 
-    @PatchMapping("complete/{todoId}")
-    void todoDone(@PathVariable long todoId){
+    @PatchMapping
+    void todoDone(@PathVariable long todoId){ // 메서드 바꿔!!
         service.complete(todoId);
     }
 

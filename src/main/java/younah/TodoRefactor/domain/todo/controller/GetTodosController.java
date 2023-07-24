@@ -21,7 +21,7 @@ class GetTodosController {
     List<Response> getTodos(){
         List<TodoDto> todos = service.getTodos();
 
-        return todos.stream()
+        return todos.stream() // converting 하는 로직이 너무 길다 그냥 Private Method로 빼자
                 .map(todoDto -> new Response(
                         todoDto.id(),
                         todoDto.content(),

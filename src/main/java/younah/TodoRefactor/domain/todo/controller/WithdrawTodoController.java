@@ -10,10 +10,10 @@ import younah.TodoRefactor.domain.todo.service.WithdrawTodoService;
 @RestController
 @RequestMapping("/todos")
 @RequiredArgsConstructor
-class WithdrawTodoController {
+class WithdrawTodoController { // complete, withdraw 하나로 합치기
     private final WithdrawTodoService service;
 
-    @PatchMapping("/withdraw/{todoId}")
+    @PatchMapping("/withdraw/{todoId}") // 어차피 메서드 하나니까 endpoint는 RequestMapping에 적자
     void withdraw(@PathVariable long todoId){
         service.withdraw(todoId);
     }

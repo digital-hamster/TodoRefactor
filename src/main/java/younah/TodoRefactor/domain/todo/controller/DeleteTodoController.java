@@ -22,8 +22,8 @@ public class DeleteTodoController {
         return new Response(todoDto.id(), todoDto.deletedAt());
     }
 
-    record Response(
+    record Response( // 응답이 꼭 필요한 것인지 생각해봅시다
             Long id,
-            LocalDateTime deletedAt
+            LocalDateTime deletedAt // 이게 꼭 필요한가??
     ){}
 }
