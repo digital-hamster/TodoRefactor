@@ -14,7 +14,7 @@ class WithdrawTodoController {
     private final WithdrawTodoService service;
 
     @PatchMapping("/withdraw/{todoId}")
-    public void withdraw(@PathVariable long todoId){
+    void withdraw(@PathVariable long todoId){
         service.withdraw(todoId);
     }
 

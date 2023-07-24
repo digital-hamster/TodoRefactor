@@ -17,7 +17,7 @@ public class DeleteTodoController {
     private final DeleteTodoService service;
 
     @DeleteMapping("/{todoId}")
-    public Response delete(@PathVariable long todoId){
+    Response delete(@PathVariable long todoId){
         TodoDto todoDto = service.remove(todoId);
         return new Response(todoDto.id(), todoDto.deletedAt());
     }
