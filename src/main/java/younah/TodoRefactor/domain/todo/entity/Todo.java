@@ -1,6 +1,7 @@
 package younah.TodoRefactor.domain.todo.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -12,9 +13,9 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@NoArgsConstructor //생성자를 만들기 위한 기본 생성자 추가
-@SQLDelete(sql = "UPDATE todo SET deleted = true, deleted_at = NOW() WHERE id = ?")
-@Where(clause = "deleted = false")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+//@SQLDelete(sql = "UPDATE todo SET deleted = true, deleted_at = NOW() WHERE id = ?")
+//@Where(clause = "deleted = false")
 public class Todo extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,10 +26,7 @@ public class Todo extends BaseTimeEntity {
 
     @Enumerated(value = EnumType.STRING)
     @Column
-    private TodoStatus status = TodoStatus.TODO_BEFORE;
-
-    //TODO SOFT DELETE
-    private final boolean deleted = Boolean.FALSE;
+    private TodoStatus status;
 
     @Column(name= "deleted_at")
     private LocalDateTime deletedAt;
@@ -46,6 +44,7 @@ public class Todo extends BaseTimeEntity {
     //TODO 생성자
     public Todo(String content) {
         this.content = content;
+        this.status = TodoStatus.TODO_BEFORE;
     }
 
 
@@ -55,16 +54,20 @@ public class Todo extends BaseTimeEntity {
         return todo;
     }
 
+    //TODO) SOFT DELETE
+    public void remove(){
+        this.deletedAt = LocalDateTime.now();
+    }
+
     //TODO) 내부로직
     public void complete(){
-        //이게 불가능할 상황이 뭐가 있지? ... 없음. 예외 꾸역꾸역 넣어보고 싶었는데 ...
         this.status = TodoStatus.TODO_DONE;
     }
 
-    public void setBack(){
+    public void withdraw(){
         this.status = TodoStatus.TODO_BEFORE;
     }
-    public void updateContent(String content){
+    public void update(String content){
         this.content = content;
     }
 }

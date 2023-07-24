@@ -1,7 +1,5 @@
 package younah.TodoRefactor.domain.todo.service;
 
-//import younah.TodoRefactor.domain.todo.response.TodoResponse;
-//import younah.TodoRefactor.domain.todo.dto.TodoDto;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -34,54 +32,71 @@ public class TodoService {
     }
 
 
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true) //TODO softDelete가 안보이도록
     public TodoController.TodoResponse getTodo(long todoId) {
-        Todo targetTodo = todoRepo.findById(todoId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.TODO_NOT_EXSIST));
+        Todo targetTodo = todoRepo.findById(todoId)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.TODO_NOT_EXSIST));
 
         return TodoController.TodoResponse.from(targetTodo);
     }
 
 
+    //ㄴ> deletedAt < 이 null인지 아닌지
+    //로직에서 쓸 때 isDeleted(){
+		//return deletat != null //이런 식으로 ~하기
+
     @Transactional(readOnly = true)
     public List<TodoController.TodoResponse> getTodos() {
-        List<Todo> todos = todoRepo.findAll(Sort.by("id").descending());
+        List<Todo> todos = todoRepo
+                .findAll(Sort.by("id")
+                .descending());
 
-            List<TodoController.TodoResponse> todoResponses = todos.stream()
-                    .map(TodoController.TodoResponse::from)
-                    .collect(Collectors.toList());
+        List<TodoController.TodoResponse> todoResponses = todos.stream()
+                .map(TodoController.TodoResponse::from)
+                .collect(Collectors.toList());
 
-    return todoResponses;
+        return todoResponses;
     }
 
 
     @Transactional
-    public void  todoComplete(long todoId){
-        Todo targetTodo = todoRepo.findById(todoId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.TODO_NOT_EXSIST));
-            targetTodo.complete();
-            todoRepo.save(targetTodo);
+    public void  complete(long todoId){
+        Todo targetTodo = todoRepo.findById(todoId)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.TODO_NOT_EXSIST));
+
+        targetTodo.complete();
+        todoRepo.save(targetTodo);
     }
 
     @Transactional
-    public void todoSetBack(long todoId){
-        Todo targetTodo = todoRepo.findById(todoId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.TODO_NOT_EXSIST));
-            targetTodo.setBack();
-            todoRepo.save(targetTodo);
+    public void withdraw(long todoId){
+        Todo targetTodo = todoRepo.findById(todoId)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.TODO_NOT_EXSIST));
+
+        targetTodo.withdraw();
+        todoRepo.save(targetTodo);
     }
 
     @Transactional
-    public TodoController.TodoResponse updateContent(long todoId, TodoController.TodoDto todoDto){
-        Todo targetTodo = todoRepo.findById(todoId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.TODO_NOT_EXSIST));
-            targetTodo.updateContent(todoDto.content());
+    public TodoController.TodoResponse update(long todoId, TodoController.TodoDto todoDto){
+        Todo targetTodo = todoRepo.findById(todoId)
+                  .orElseThrow(() -> new BusinessLogicException(ExceptionCode.TODO_NOT_EXSIST));
+
+            targetTodo.update(todoDto.content());
             todoRepo.save(targetTodo);
 
-    return TodoController.TodoResponse.from(targetTodo);
+            return TodoController.TodoResponse.from(targetTodo); //// 컨트롤러가 여기 왜 있어요 서비스는 컨트롤러를 몰라야됨
+        //ㄴ> 멘토님은 이거 해결책으로 todoDto를 스심
 
         }
 
-        @Transactional
-        public void deleteTodo(long todoId){
-            todoRepo.deleteById(todoId);
-        }
+    @Transactional
+    public void delete(long todoId){
+        Todo targetTodo = todoRepo.findById(todoId)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.TODO_NOT_EXSIST));
 
-
+        targetTodo.remove();
+        todoRepo.save(targetTodo);
     }
+
+}

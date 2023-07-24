@@ -1,6 +1,7 @@
 package younah.TodoRefactor.global.exception.handler;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import younah.TodoRefactor.global.exception.BusinessLogicException;
@@ -13,7 +14,7 @@ public class ExceptionHandler {
     public ResponseEntity<String> handleException(BusinessLogicException ex){
 
         ResponseEntity<String> response = ResponseEntity
-                .status(ex.getExceptionCode().getCode())
+                .status(HttpStatus.BAD_REQUEST)
                 .body(ex.getExceptionCode().getMessage());
 
     return response;

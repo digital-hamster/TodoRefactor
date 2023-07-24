@@ -1,7 +1,5 @@
 package younah.TodoRefactor.domain.todo.controller;
 
-//import younah.TodoRefactor.domain.todo.response.TodoResponse;
-
 import younah.TodoRefactor.domain.todo.entity.Todo;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/todo")
+@RequestMapping("/todos")
 @RequiredArgsConstructor
 @Validated
 public class TodoController {
@@ -25,7 +23,7 @@ public class TodoController {
     private final TodoService todoService;
 
     @PostMapping
-    public TodoResponse createTodo(@NotNull @RequestBody TodoDto todoDto){
+    TodoResponse createTodo(@NotNull @RequestBody TodoDto todoDto){
         String content = todoDto.content();
         TodoResponse response = todoService.createTodo(content);
 
@@ -33,46 +31,53 @@ public class TodoController {
     }
 
     @GetMapping
-    public List<TodoResponse> getTodos(){
+    List<TodoResponse> getTodos(){
         return todoService.getTodos();
     }
 
     @GetMapping("/{todoId}")
-    public TodoResponse getTodo(@PathVariable("todoId") long todoId){
+    TodoResponse getTodo(@PathVariable long todoId){
         return todoService.getTodo(todoId);
     }
 
     @PatchMapping("/complete/{todoId}")
-    public void todoDone(@PathVariable("todoId") long todoId){
-        todoService.todoComplete(todoId);
+    void todoDone(@PathVariable long todoId){
+        todoService.complete(todoId);
     }
 
     @PatchMapping("/setback/{todoId}")
-    public void todoWithDraw(@PathVariable("todoId") long todoId){
-        todoService.todoSetBack(todoId);
+    void todoWithDraw(@PathVariable long todoId){
+        todoService.withdraw(todoId);
     }
 
     @PatchMapping("/{todoId}")
-    public TodoResponse updateTodo(@PathVariable("todoId") long todoId, @RequestBody TodoDto todoDto){
-        TodoResponse response =  todoService.updateContent(todoId, todoDto);
+    TodoResponse updateTodo(@PathVariable long todoId, @RequestBody TodoDto todoDto){
+        TodoResponse response =  todoService.update(todoId, todoDto);
         return response;
     }
 
     @DeleteMapping("{todoId}")
-    public void deleteTodo(@PathVariable("todoId") long todoId){
-        todoService.deleteTodo(todoId);
+    void deleteTodo(@PathVariable long todoId){
+        todoService.delete(todoId);
     }
 
     //TODO RECORD: DTO
     public record TodoDto(String content) {
-        //동일한 패키지가 아니라서 service에서 접근할 수 없음 ...
-        //얘를 public을 달지 말지 고민을 많이 했는데, 애초에 dto의 값 자체는 외부에서 오는 거니까 어차피 열린교회문. 아닌가 그래서 달앗삼
+
     }
 
     //TODO RECORD: RESPONSE
-    public record TodoResponse(long todoId, Todo.TodoStatus todoStatus, String content, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    public record TodoResponse(long todoId,
+                               Todo.TodoStatus todoStatus,
+                               String content,
+                               LocalDateTime createdAt,
+                               LocalDateTime modifiedAt) {
         public static TodoResponse from(Todo todo) {
-            return new TodoResponse(todo.getId(), todo.getStatus(), todo.getContent(), todo.getCreatedAt(), todo.getModifiedAt());
+            return new TodoResponse(todo.getId(),
+                    todo.getStatus(),
+                    todo.getContent(),
+                    todo.getCreatedAt(),
+                    todo.getModifiedAt());
         }
     }
 }
