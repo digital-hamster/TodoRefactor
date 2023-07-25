@@ -21,21 +21,13 @@ public class GetTodosService {
 
     @Transactional(readOnly = true)
     public List<TodoDto> getTodos() {
+
         List<Todo> todos = todoRepo
-                .findAll(Sort.by("id")
-                        .descending());
+                .findActiveTodos();
 
-        return isDeleted(todos).stream()
-                .map(TodoDto::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-
-    //entity를 거치는 메소드는 직접적으로 db의 접근이 있고, 그 값을 변경하는 것들만 넣는거라고 .. 생각됨
-    //단순히 데이터를 걸러주는 건 엔티티가 할 일이 아니지 않을까..?
-    public List<Todo> isDeleted(List<Todo> todos) {
         return todos.stream()
-                .filter(todo -> todo.getDeletedAt() == null)
-                .collect(Collectors.toList());
+                .map(TodoDto::fromEntity)
+                .toList();
     }
+
 }

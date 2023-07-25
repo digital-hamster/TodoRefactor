@@ -69,4 +69,10 @@ public class Todo extends BaseTimeEntity {
         this.content = content;
     }
 
+//    public static List<Todo> isActive(List<Todo> todos) {
+//        return todos.stream()
+//                .filter(todo -> todo.getDeletedAt() == null)
+//                .collect(Collectors.toList());
+  //  }
+
 }

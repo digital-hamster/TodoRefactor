@@ -10,7 +10,7 @@ import younah.TodoRefactor.global.exception.ExceptionCode;
 
 @Service
 @RequiredArgsConstructor
-public class CompleteTodoService {
+public class BusinessTodoService {
     private final TodoRepository todoRepo;
 
     @Transactional
@@ -21,4 +21,15 @@ public class CompleteTodoService {
         targetTodo.complete();
         todoRepo.save(targetTodo);
     }
+
+    @Transactional
+    public void withdraw(long todoId){
+        Todo targetTodo = todoRepo.findById(todoId)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.TODO_NOT_EXSIST));
+
+        targetTodo.withdraw();
+        todoRepo.save(targetTodo);
+    }
+
+
 }
