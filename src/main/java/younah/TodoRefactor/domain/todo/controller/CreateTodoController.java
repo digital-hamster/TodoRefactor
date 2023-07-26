@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import younah.TodoRefactor.domain.common.ApiResponse;
 import younah.TodoRefactor.domain.todo.dto.TodoDto;
 import younah.TodoRefactor.domain.todo.service.CreateTodoService;
 
@@ -17,9 +18,12 @@ import younah.TodoRefactor.domain.todo.service.CreateTodoService;
 class CreateTodoController {
     private final CreateTodoService service;
 
-    @PostMapping
+    @PostMapping(produces = "application/json")
     Response CreateTodo(@RequestBody Request request){
         TodoDto todoDto = service.create(request.toRequirement());
+
+        //Response response =  new Response(todoDto.id());
+       // return ApiResponse.success(response);
 
         return new Response(todoDto.id());
     }

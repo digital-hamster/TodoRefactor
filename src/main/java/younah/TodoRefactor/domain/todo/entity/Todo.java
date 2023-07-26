@@ -52,6 +52,12 @@ public class Todo extends BaseTimeEntity {
         return todo;
     }
 
+    //TODO 테스팅을 위한 생성자 추가
+    public Todo(String content, LocalDateTime deletedAt) {
+        this.content = content;
+        this.deletedAt = deletedAt;
+    }
+
     //TODO) SOFT DELETE
     public void remove(){
         this.deletedAt = LocalDateTime.now();
@@ -68,5 +74,6 @@ public class Todo extends BaseTimeEntity {
     public void update(String content){
         this.content = content;
     }
+
 
 }
