@@ -24,23 +24,20 @@ class CreateTodoServiceTest {
 
     @Test
     void succeess(){
+
         //given
-        CreateTodoService.Requirement requirement = new CreateTodoService.Requirement("test");
-        Todo todo = new Todo(requirement.content());
+        var requirement = new CreateTodoService.Requirement("test");
+        var todo = new Todo(requirement.content());
         ReflectionTestUtils.setField(todo, "id", 1L);
 
         BDDMockito.given(todoRepo.save(Mockito.any(Todo.class)))
                 .willReturn(todo);
-        //ㄴ> 로직이 돌 때 실제 사용되는 Repository 메소드를 정의해놓은듯
 
         //when
         Throwable throwable = BDDAssertions
                 .catchThrowable(() -> service.create(requirement));
-        //ㄴ> 예외를 발생시키는 방법
 
         //then
         assertThat(throwable).isNull();
     }
-
-
 }
