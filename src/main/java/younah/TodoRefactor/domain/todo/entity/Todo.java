@@ -32,7 +32,7 @@ public class Todo extends BaseTimeEntity {
     @RequiredArgsConstructor
     public enum TodoStatus {
         TODO_BEFORE("활동 전"),
-        TODO_DONE("활동 완료");
+        TODO_COMPLETE("활동 완료");
 
         private final String status;
     }
@@ -56,7 +56,7 @@ public class Todo extends BaseTimeEntity {
 
     //TODO) 내부로직
     public void complete(){
-        this.status = TodoStatus.TODO_DONE;
+        this.status = TodoStatus.TODO_COMPLETE;
     }
 
     public void withdraw(){

@@ -10,4 +10,10 @@ import java.util.List;
 public interface TodoRepository extends JpaRepository<Todo, Long> {
     @Query("select t from Todo t where t.deletedAt is null ORDER BY t.id DESC")
     List<Todo> findActiveTodos();
+
+//    @Query("SELECT t FROM Todo t WHERE t.status = 'TODO_BEFORE'")
+//    List<Todo> findTodosByTodoBefore();
+
+//    @Query("SELECT t FROM Todo t WHERE t.status = 'TODO_COMPLETE'")
+//    List<Todo> findTodosByTodoComplete();
 }
