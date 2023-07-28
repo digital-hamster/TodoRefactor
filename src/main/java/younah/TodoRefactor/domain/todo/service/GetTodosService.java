@@ -15,7 +15,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class GetTodosService {
-
     private final TodoRepository todoRepo;
 
     @Transactional(readOnly = true)
@@ -28,5 +27,4 @@ public class GetTodosService {
                 .map(TodoDto::fromEntity)
                 .toList();
     }
-
 }

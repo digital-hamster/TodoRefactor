@@ -14,19 +14,17 @@ public class CreateTodoService {
 
     @Transactional
     public TodoDto create(Requirement requirement){
-        Todo newTodo = requirement.toEntity(); //requirement -> entity 변환
-        Todo savedTodo = todoRepo.save(newTodo); //비즈니스 로직
+        Todo newTodo = requirement.toEntity();
+        Todo savedTodo = todoRepo.save(newTodo);
 
-        return TodoDto.fromEntity(savedTodo); //Entity -> Dto 변환 및 컨트롤러 반환
+        return TodoDto.fromEntity(savedTodo);
     }
 
-
-    public record Requirement( //service로 받아온 객체를 entity로 변환
+    public record Requirement(
             String content
     ){
         public Todo toEntity(){
             return new Todo(content);
         }
     }
-
 }

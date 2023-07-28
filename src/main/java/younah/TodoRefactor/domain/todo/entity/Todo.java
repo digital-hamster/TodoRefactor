@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import younah.TodoRefactor.domain.common.BaseTimeEntity;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -67,6 +65,4 @@ public class Todo extends BaseTimeEntity {
     public void update(String content){
         this.content = content;
     }
-
-
 }
