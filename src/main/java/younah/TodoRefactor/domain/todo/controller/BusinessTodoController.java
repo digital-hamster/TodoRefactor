@@ -23,5 +23,4 @@ public class BusinessTodoController {
     void withdraw(@PathVariable long todoId){
         service.withdraw(todoId);
     }
-
 }

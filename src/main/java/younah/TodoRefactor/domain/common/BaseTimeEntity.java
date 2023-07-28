@@ -21,7 +21,6 @@ public class BaseTimeEntity {
         @Column(name = "modified_at")
         private LocalDateTime modifiedAt;
 
-
         @PrePersist
         void prePersist() {
                 this.createdAt = LocalDateTime.now();

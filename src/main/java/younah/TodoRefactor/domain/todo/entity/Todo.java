@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import younah.TodoRefactor.domain.common.BaseTimeEntity;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -45,17 +43,10 @@ public class Todo extends BaseTimeEntity {
         this.status = TodoStatus.TODO_BEFORE;
     }
 
-
     public static Todo from(String content) {
         Todo todo = new Todo(content);
         todo.content = content;
         return todo;
-    }
-
-    //TODO 테스팅을 위한 생성자 추가
-    public Todo(String content, LocalDateTime deletedAt) {
-        this.content = content;
-        this.deletedAt = deletedAt;
     }
 
     //TODO) SOFT DELETE
@@ -74,6 +65,4 @@ public class Todo extends BaseTimeEntity {
     public void update(String content){
         this.content = content;
     }
-
-
 }

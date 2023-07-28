@@ -2,15 +2,19 @@ package younah.TodoRefactor.domain.todo.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.springframework.test.util.ReflectionTestUtils;
 import younah.TodoRefactor.domain.todo.entity.Todo;
 import younah.TodoRefactor.domain.todo.repository.TodoRepository;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 
 class BusinessTodoServiceTest {
@@ -26,31 +30,43 @@ class BusinessTodoServiceTest {
 
     @Test
     void complete() {
+
         //given
-        Todo todo = new Todo("test");
+        var todo = new Todo("test");
+        ReflectionTestUtils.setField(todo, "id", 1L);
+        given(todoRepo.findById(eq(1L)))
+                .willReturn(Optional.of(todo));
 
         //when
-        BDDMockito.given(todoRepo.findById(BDDMockito.anyLong()))
-                .willReturn(Optional.of(todo));
         service.complete(1L);
 
         //then
-        assertThat(todo.getStatus()).isEqualTo(Todo.TodoStatus.TODO_DONE);
-        //ㄴ> complete는 null로 확인할 수 있는 게 아닌 거 같아서 요 방식으로 했어요
+        var argumentCaptor = ArgumentCaptor.forClass(Todo.class);
+        verify(todoRepo, times(1))
+                .save(argumentCaptor.capture());
+        var capturedTodo = argumentCaptor.getValue();
 
+        assertThat(capturedTodo.getStatus()).isEqualTo(Todo.TodoStatus.TODO_DONE);
     }
 
     @Test
     void withdraw() {
+
         //given
-        Todo todo = new Todo("test");
+        var todo = new Todo("test");
+        ReflectionTestUtils.setField(todo, "id", 1L);
+        given(todoRepo.findById(eq(1L)))
+                .willReturn(Optional.of(todo));
 
         //when
-        BDDMockito.given(todoRepo.findById(BDDMockito.anyLong()))
-                .willReturn(Optional.of(todo));
         service.withdraw(1L);
 
         //then
-        assertThat(todo.getStatus()).isEqualTo(Todo.TodoStatus.TODO_BEFORE);
+        var argumentCaptor = ArgumentCaptor.forClass(Todo.class);
+        verify(todoRepo, times(1))
+                .save(argumentCaptor.capture());
+        var capturedTodo = argumentCaptor.getValue();
+
+        assertThat(capturedTodo.getStatus()).isEqualTo(Todo.TodoStatus.TODO_BEFORE);
     }
 }

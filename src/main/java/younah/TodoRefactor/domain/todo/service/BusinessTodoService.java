@@ -30,6 +30,4 @@ public class BusinessTodoService {
         targetTodo.withdraw();
         todoRepo.save(targetTodo);
     }
-
-
 }

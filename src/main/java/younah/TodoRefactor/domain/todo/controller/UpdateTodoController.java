@@ -6,9 +6,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import younah.TodoRefactor.domain.todo.service.UpdateTodoService;
 
-//request가 존재한다면, 해당 request 안에 requirement로 변환해주는 메소드를 지니고 있어야 함
-//동시에, 해당 service에 requirement가 선언되어 있어야 함 (record)
-
 @RestController
 @RequestMapping("/todos/{todoId}")
 @RequiredArgsConstructor
@@ -20,7 +17,6 @@ class UpdateTodoController {
     @PutMapping
     void updateTodo(@RequestBody Request request,
                         @PathVariable long todoId){
-        //requirement 변환
         service.update(todoId, request.toRequirement());
     }
 

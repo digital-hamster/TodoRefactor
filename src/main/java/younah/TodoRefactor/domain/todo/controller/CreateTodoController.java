@@ -18,14 +18,12 @@ import younah.TodoRefactor.domain.todo.service.CreateTodoService;
 class CreateTodoController {
     private final CreateTodoService service;
 
-    @PostMapping(produces = "application/json")
-    Response CreateTodo(@RequestBody Request request){
+    @PostMapping
+    ApiResponse<Response> CreateTodo(@RequestBody Request request){
         TodoDto todoDto = service.create(request.toRequirement());
 
-        //Response response =  new Response(todoDto.id());
-       // return ApiResponse.success(response);
-
-        return new Response(todoDto.id());
+       Response response =  new Response(todoDto.id());
+       return ApiResponse.success(response);
     }
 
     record Request(
