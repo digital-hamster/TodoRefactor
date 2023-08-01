@@ -1,44 +1,55 @@
 package younah.TodoRefactor.domain.todo.controller;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.*;
 import younah.TodoRefactor.domain.common.ApiResponse;
 import younah.TodoRefactor.domain.todo.dto.TodoDto;
 import younah.TodoRefactor.domain.todo.entity.Todo;
 import younah.TodoRefactor.domain.todo.service.GetTodosService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/todos")
 @RequiredArgsConstructor
-class GetTodosController {
-    private final GetTodosService service;
+public class GetTodosController {
+        private final GetTodosService service;
 
     @GetMapping
-    ApiResponse<List<Response>> getTodos(){
-        List<TodoDto> todos = service.getTodos();
+    ApiResponse<Page<Response>> getTodos(@RequestParam("todoStatus") String status,
+                                         @RequestParam(value = "page", defaultValue = "1") int page) {
+        Pageable pageable = PageRequest.of(page, 3);
+        Todo.TodoStatus todoStatus = Todo.statusFromString(status);
 
-        List<Response> responses = Response.to(todos);
+        Page<TodoDto> todos = service.getTodos(pageable, todoStatus);
+        Page<Response> responses = Response.to(todos);
+
         return ApiResponse.success(responses);
-    }
+    } //페이지의 정보를 받아서 response에서 만지고 싶으면 service의 반환값도 Page여야 함 ...
 
     record Response(
             Long id,
             String content,
             Todo.TodoStatus status
-    ){
-        static List<Response> to(List<TodoDto> todos) {
-            return todos.stream()
+    ) {
+        static Page<Response> to(Page<TodoDto> todos) {
+            List<Response> listTodos = todos.getContent().stream()
                     .map(todoDto -> new Response(
                             todoDto.id(),
                             todoDto.content(),
                             todoDto.status()
                     ))
                     .collect(Collectors.toList());
+
+            return new PageImpl<>(listTodos, todos.getPageable(), todos.getTotalElements());
+            //ㄴ> 페이지네이션의 정보를 담기 위해서 pageImpl<>을 쓴다는. 어딘가의 정보.
         }
     }
 }

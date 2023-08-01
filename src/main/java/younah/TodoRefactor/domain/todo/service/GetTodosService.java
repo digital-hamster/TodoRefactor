@@ -1,6 +1,9 @@
 package younah.TodoRefactor.domain.todo.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import younah.TodoRefactor.domain.todo.dto.TodoDto;
@@ -8,9 +11,7 @@ import younah.TodoRefactor.domain.todo.entity.Todo;
 import younah.TodoRefactor.domain.todo.repository.TodoRepository;
 
 import java.util.List;
-
-
-//받아올 값이 따로 없어서 requirement 는 안했음
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,13 +19,34 @@ public class GetTodosService {
     private final TodoRepository todoRepo;
 
     @Transactional(readOnly = true)
-    public List<TodoDto> getTodos() {
+    public Page<TodoDto> getTodos(Pageable pageable, Todo.TodoStatus todoStatus) {
 
-        List<Todo> todos = todoRepo
-                .findActiveTodos();
+        Page<Todo> todos = todoRepo
+                .findActiveTodos(pageable);
 
-        return todos.stream()
-                .map(TodoDto::fromEntity)
-                .toList();
+        //TODO filter
+        if (todoStatus == Todo.TodoStatus.TODO_COMPLETE){
+            return findCompleteTodos(todos, pageable);
+        }else {
+            return findBeforeTodos(todos, pageable);
+        }
     }
+
+    public Page<TodoDto> findCompleteTodos(Page<Todo> todos, Pageable pageable) {
+        List<TodoDto> list = todos.getContent().stream()
+                .filter(todo -> todo.getStatus() == Todo.TodoStatus.TODO_COMPLETE)
+                .map(TodoDto::fromEntity)
+                .collect(Collectors.toList());
+        return new PageImpl<>(list, pageable, todos.getTotalElements());
+    }
+
+    public Page<TodoDto> findBeforeTodos(Page<Todo> todos, Pageable pageable) {
+        List<TodoDto> list = todos.getContent().stream()
+                .filter(todo -> todo.getStatus() == Todo.TodoStatus.TODO_BEFORE)
+                .map(TodoDto::fromEntity)
+                .collect(Collectors.toList());
+        return new PageImpl<>(list, pageable, todos.getTotalElements());
+    }
+    //PageImpl<>(리ㅣ스트 데이터, pageable 객체, 전체 데이터 개수)
+    //Page 타입으로 감싸기 때문에 .. page에 대한 정보와 같이 보내려는 데이터를 .. 담아야 함 ... ㅋㅋ...ㅋ...
 }
