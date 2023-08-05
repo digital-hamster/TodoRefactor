@@ -10,6 +10,7 @@ import younah.TodoRefactor.domain.todo.dto.TodoDto;
 import younah.TodoRefactor.domain.todo.entity.Todo;
 import younah.TodoRefactor.domain.todo.repository.TodoRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,10 +20,13 @@ public class GetTodosService {
     private final TodoRepository todoRepo;
 
     @Transactional(readOnly = true)
-    public Page<TodoDto> getTodos(Pageable pageable, Todo.TodoStatus todoStatus) {
+    public Page<TodoDto> getTodos(Pageable pageable,
+                                  Todo.TodoStatus todoStatus,
+                                  LocalDateTime startAt,
+                                  LocalDateTime endAt) {
 
         Page<Todo> todos = todoRepo
-                .findActiveTodos(pageable);
+                .findByDates(startAt, endAt, pageable);
 
         //TODO filter
         if (todoStatus == Todo.TodoStatus.TODO_COMPLETE){
@@ -34,7 +38,9 @@ public class GetTodosService {
 
     public Page<TodoDto> findCompleteTodos(Page<Todo> todos, Pageable pageable) {
         List<TodoDto> list = todos.getContent().stream()
-                .filter(todo -> todo.getStatus() == Todo.TodoStatus.TODO_COMPLETE)
+                .filter(todo
+                        -> todo.getStatus() == Todo.TodoStatus.TODO_COMPLETE
+                                && todo.getDeletedAt() == null)
                 .map(TodoDto::fromEntity)
                 .collect(Collectors.toList());
         return new PageImpl<>(list, pageable, todos.getTotalElements());
@@ -42,7 +48,9 @@ public class GetTodosService {
 
     public Page<TodoDto> findBeforeTodos(Page<Todo> todos, Pageable pageable) {
         List<TodoDto> list = todos.getContent().stream()
-                .filter(todo -> todo.getStatus() == Todo.TodoStatus.TODO_BEFORE)
+                .filter(todo
+                        -> todo.getStatus() == Todo.TodoStatus.TODO_BEFORE
+                                && todo.getDeletedAt() == null)
                 .map(TodoDto::fromEntity)
                 .collect(Collectors.toList());
         return new PageImpl<>(list, pageable, todos.getTotalElements());

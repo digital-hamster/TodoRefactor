@@ -24,11 +24,21 @@ public class GetTodosController {
 
     @GetMapping
     ApiResponse<Page<Response>> getTodos(@RequestParam("todoStatus") String status,
+                                         @RequestParam("startAt")
+                                         @NotBlank(message = "검색 시작 날짜를 넣어주세요")
+                                         LocalDateTime startAt,
+                                         @RequestParam("endAt") LocalDateTime endAt,
                                          @RequestParam(value = "page", defaultValue = "1") int page) {
-        Pageable pageable = PageRequest.of(page, 3);
+
+        Pageable pageable = PageRequest.of(page - 1, 3);
+            //defaultValue를 1로 설정해도, Pageabled의 최종 반환은 0부터 시작하기 때문에 1부터 시작할 수 있도록
         Todo.TodoStatus todoStatus = Todo.statusFromString(status);
 
-        Page<TodoDto> todos = service.getTodos(pageable, todoStatus);
+        Page<TodoDto> todos = service.getTodos(pageable,
+                todoStatus,
+                startAt,
+                endAt);
+
         Page<Response> responses = Response.to(todos);
 
         return ApiResponse.success(responses);

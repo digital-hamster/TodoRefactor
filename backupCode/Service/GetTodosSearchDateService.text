@@ -1,6 +1,8 @@
 package younah.TodoRefactor.domain.todo.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import younah.TodoRefactor.domain.todo.dto.TodoDto;
@@ -20,6 +22,10 @@ public class GetTodosSearchDateService {
                                     LocalDateTime endAt){
         List<Todo> todos = todoRepo
                 .findByDates(startAt, endAt);
+
+        //(기존) 날짜 검색 쿼리 (repository)
+//        @Query("SELECT t FROM Todo t WHERE t.createdAt BETWEEN :startAt AND :endAt")
+//        List<Todo> findByDates(@Param("startAt") LocalDateTime startAt, @Param("endAt") LocalDateTime endAt);
 
         return to(todos);
     }
