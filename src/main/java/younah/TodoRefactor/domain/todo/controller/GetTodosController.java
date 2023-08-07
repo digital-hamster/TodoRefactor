@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import younah.TodoRefactor.domain.common.ApiResponse;
@@ -25,12 +26,18 @@ public class GetTodosController {
     ApiResponse<Page<Response>> getTodos(Request request,
                                          Pageable pageable) {
 
+        //(default 1) 클라이언트에게 받아온 pageable에서 꺼내야 함
+        var editPageable = PageRequest.of(
+                pageable.getPageNumber() - 1,
+                pageable.getPageSize(),
+                pageable.getSort());
+
         //requirement 변환
         var requirement = new GetTodosService.Requirement(
                 request.status(),
                 request.from(),
                 request.to(),
-                pageable
+                editPageable
         );
 
         Page<TodoDto> todos = service.getTodos(requirement);
