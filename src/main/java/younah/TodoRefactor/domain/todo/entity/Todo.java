@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import younah.TodoRefactor.domain.common.BaseTimeEntity;
+import younah.TodoRefactor.global.exception.BusinessLogicException;
+import younah.TodoRefactor.global.exception.ExceptionCode;
 
 import java.time.LocalDateTime;
 
@@ -32,7 +34,7 @@ public class Todo extends BaseTimeEntity {
     @RequiredArgsConstructor
     public enum TodoStatus {
         TODO_BEFORE("활동 전"),
-        TODO_DONE("활동 완료");
+        TODO_COMPLETE("활동 완료");
 
         private final String status;
     }
@@ -56,7 +58,7 @@ public class Todo extends BaseTimeEntity {
 
     //TODO) 내부로직
     public void complete(){
-        this.status = TodoStatus.TODO_DONE;
+        this.status = TodoStatus.TODO_COMPLETE;
     }
 
     public void withdraw(){
@@ -64,5 +66,15 @@ public class Todo extends BaseTimeEntity {
     }
     public void update(String content){
         this.content = content;
+    }
+
+    //TODO String 타입 enum으로 바꾸기
+    public static TodoStatus statusFromString(String status) {//다른 상태값이 들어오면 controller에서 변환과 동시에 예외
+        for (TodoStatus todoStatus : TodoStatus.values()) {
+            if (todoStatus.name().equals(status)) { //.getStatus로는 검색을 못 해서 .name() 이용
+                return todoStatus;
+            }
+        }
+        throw new BusinessLogicException(ExceptionCode.STATUS_NOT_EXSIST);
     }
 }

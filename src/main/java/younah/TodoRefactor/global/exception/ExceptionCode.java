@@ -7,7 +7,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ExceptionCode {
 
-    TODO_NOT_EXSIST("존재하지 않는 Todo 입니다.");
+    TODO_NOT_EXSIST("존재하지 않는 Todo 입니다."),
+    STATUS_NOT_EXSIST("존재하지 않는 상태입니다");
 
     private String message;
 }

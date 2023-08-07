@@ -7,24 +7,24 @@ import younah.TodoRefactor.domain.todo.dto.TodoDto;
 import younah.TodoRefactor.domain.todo.entity.Todo;
 import younah.TodoRefactor.domain.todo.repository.TodoRepository;
 
+import java.util.List;
+
+
+//받아올 값이 따로 없어서 requirement 는 안했음
+
 @Service
 @RequiredArgsConstructor
-public class CreateTodoService {
+public class GetTodosService {
     private final TodoRepository todoRepo;
 
-    @Transactional
-    public TodoDto create(Requirement requirement){
-        var newTodo = requirement.toEntity();
-        var savedTodo = todoRepo.save(newTodo);
+    @Transactional(readOnly = true)
+    public List<TodoDto> getTodos() {
 
-        return TodoDto.fromEntity(savedTodo);
-    }
+        List<Todo> todos = todoRepo
+                .findActiveTodos();
 
-    public record Requirement(
-            String content
-    ){
-        public Todo toEntity(){
-            return new Todo(content);
-        }
+        return todos.stream()
+                .map(TodoDto::fromEntity)
+                .toList();
     }
 }
