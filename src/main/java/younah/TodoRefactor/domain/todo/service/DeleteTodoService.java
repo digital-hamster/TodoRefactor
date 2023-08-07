@@ -15,7 +15,7 @@ public class DeleteTodoService {
 
     @Transactional
     public void remove(long todoId){
-        Todo targetTodo = todoRepo.findById(todoId)
+        var targetTodo = todoRepo.findById(todoId)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.TODO_NOT_EXSIST));
 
         targetTodo.remove();

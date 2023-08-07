@@ -14,8 +14,8 @@ public class CreateTodoService {
 
     @Transactional
     public TodoDto create(Requirement requirement){
-        Todo newTodo = requirement.toEntity();
-        Todo savedTodo = todoRepo.save(newTodo);
+        var newTodo = requirement.toEntity();
+        var savedTodo = todoRepo.save(newTodo);
 
         return TodoDto.fromEntity(savedTodo);
     }

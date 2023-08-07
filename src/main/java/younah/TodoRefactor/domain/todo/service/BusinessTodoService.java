@@ -15,7 +15,7 @@ public class BusinessTodoService {
 
     @Transactional
     public void complete(long todoId){
-        Todo targetTodo = todoRepo.findById(todoId)
+        var targetTodo = todoRepo.findById(todoId)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.TODO_NOT_EXSIST));
 
         targetTodo.complete();
@@ -24,7 +24,7 @@ public class BusinessTodoService {
 
     @Transactional
     public void withdraw(long todoId){
-        Todo targetTodo = todoRepo.findById(todoId)
+        var targetTodo = todoRepo.findById(todoId)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.TODO_NOT_EXSIST));
 
         targetTodo.withdraw();

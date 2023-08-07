@@ -25,7 +25,7 @@ public class GetTodosService {
                                   LocalDateTime startAt,
                                   LocalDateTime endAt) {
 
-        var todos = todoRepo
+        Page<Todo> todos = todoRepo
                 .findByDates(startAt, endAt, pageable);
 
         //TODO filter
@@ -37,7 +37,7 @@ public class GetTodosService {
     }
 
     public Page<TodoDto> findCompleteTodos(Page<Todo> todos, Pageable pageable) {
-        var list = todos.getContent().stream()
+        List<TodoDto> list = todos.getContent().stream()
                 .filter(todo
                         -> todo.getStatus() == Todo.TodoStatus.TODO_COMPLETE
                                 && todo.getDeletedAt() == null)
@@ -47,7 +47,7 @@ public class GetTodosService {
     }
 
     public Page<TodoDto> findBeforeTodos(Page<Todo> todos, Pageable pageable) {
-        var list = todos.getContent().stream()
+        List<TodoDto> list = todos.getContent().stream()
                 .filter(todo
                         -> todo.getStatus() == Todo.TodoStatus.TODO_BEFORE
                                 && todo.getDeletedAt() == null)
@@ -57,4 +57,6 @@ public class GetTodosService {
     }
     //PageImpl<>(리ㅣ스트 데이터, pageable 객체, 전체 데이터 개수)
     //Page 타입으로 감싸기 때문에 .. page에 대한 정보와 같이 보내려는 데이터를 .. 담아야 함 ... ㅋㅋ...ㅋ...
+    
+    
 }

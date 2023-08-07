@@ -16,7 +16,7 @@ public class UpdateTodoService {
     @Transactional
     public void update(long todoId, Requirement requirement){
 
-        Todo targetTodo = todoRepo.findById(todoId)
+        var targetTodo = todoRepo.findById(todoId)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.TODO_NOT_EXSIST));
 
         targetTodo.update(requirement.content());
