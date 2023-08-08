@@ -24,7 +24,7 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom{
     }
 
     @Override
-    public Page<Todo> findByDates(SearchCondition searchCondition,
+    public Page<Todo> findSearchTodos(SearchCondition searchCondition,
                                   Pageable pageable) {
         QTodo todo = QTodo.todo;
 
@@ -32,7 +32,7 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom{
             //status의 where
             searchCondition.status()
                     .map(todo.status::eq) //같다면!
-                    .orElse(null), //만약 같다는 조건이 충족하지 못한다면 null
+                    .orElse(null), //todo.status가 Null인 경우, 사용자가 값을 넣지 않은 경우 null
 
             //startedAt
             searchCondition.from()
@@ -45,6 +45,15 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom{
                     .orElse(null),
         };
 
+        //total에 대한 정보가 있어야 페이지네이션 객체 생성 가능
+        var countQuery = queryFactory
+                .select(Wildcard.count) // ==select count(*) from todo
+                .from(todo)
+                .where(where) //where 조건에 대한 count 이행
+                .fetchOne();
+        //ㄴ> 쿼리 계산 카운트 먼저 호출하기
+            //ㄴ> 0개면 진짜 query 안날리고 그냥 empty 보내면됨 (2번 보낼 쿼리 2번으로 처리)
+
         var query = queryFactory
                 .selectFrom(todo) //Project.const 어쩌구 쓰면 바로 dto 반환
                 .where(where)
@@ -52,12 +61,6 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom{
                 .limit(pageable.getPageSize()) //쿼리로 한도 정하기 가능
                 .fetch(); //리스트 반환, 쿼리에 붙여서 반환 가능
 
-        //total에 대한 정보가 있어야 페이지네이션 객체 생성 가능
-        var countQuery = queryFactory
-                .select(Wildcard.count) // ==select count(*) from todo
-                .from(todo)
-                .where(where) //where 조건에 대한 count 이행
-                .fetchOne();
 
         //페이지에 대한 검색 결과가 없을 때 빈 거 반환해줘야함 페이지 어쩌구였음
         if (countQuery==0 || countQuery==null){

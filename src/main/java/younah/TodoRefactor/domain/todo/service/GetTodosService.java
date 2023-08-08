@@ -30,7 +30,7 @@ public class GetTodosService {
         );
 
         var todos = todoRepo
-                .findByDates(searchCondition, requirement.pageable());
+                .findSearchTodos(searchCondition, requirement.pageable());
 
         //Entity -> Dto
         var dtos = todos.getContent()
