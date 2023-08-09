@@ -29,5 +29,5 @@ public interface TodoRepository extends JpaRepository<Todo, Long>
     //@Query("SELECT t FROM Todo t WHERE t.createdAt BETWEEN :startAt AND :endAt")
     //List<Todo> findByDates(@Param("startAt") LocalDateTime startAt, @Param("endAt") LocalDateTime endAt);
 
-    Page<Todo> findByDates(LocalDateTime startAt, LocalDateTime endAt, Pageable pageable);
+    Page<Todo> findSearchTodos(SearchCondition searchCondition, Pageable pageable); //여기서 searchCondition 받아옴
 }

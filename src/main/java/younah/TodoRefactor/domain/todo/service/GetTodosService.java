@@ -9,10 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 import younah.TodoRefactor.domain.todo.dto.TodoDto;
 import younah.TodoRefactor.domain.todo.entity.Todo;
 import younah.TodoRefactor.domain.todo.repository.TodoRepository;
+import younah.TodoRefactor.domain.todo.repository.TodoRepositoryCustom;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,41 +20,34 @@ public class GetTodosService {
     private final TodoRepository todoRepo;
 
     @Transactional(readOnly = true)
-    public Page<TodoDto> getTodos(Pageable pageable,
-                                  Todo.TodoStatus todoStatus,
-                                  LocalDateTime startAt,
-                                  LocalDateTime endAt) {
+    public Page<TodoDto> getTodos(Requirement requirement) {
+
+        //서비스에 있는 걸 repo로 넘기기 위해 (pageable, 그 외)
+        var searchCondition = new TodoRepositoryCustom.SearchCondition(
+                requirement.status,
+                requirement.from,
+                requirement.to
+        );
 
         var todos = todoRepo
-                .findByDates(startAt, endAt, pageable);
+                .findSearchTodos(searchCondition, requirement.pageable());
 
-        //TODO filter
-        if (todoStatus == Todo.TodoStatus.TODO_COMPLETE){
-            return findCompleteTodos(todos, pageable);
-        }else {
-            return findBeforeTodos(todos, pageable);
-        }
-    }
-
-    public Page<TodoDto> findCompleteTodos(Page<Todo> todos, Pageable pageable) {
-        var list = todos.getContent().stream()
-                .filter(todo
-                        -> todo.getStatus() == Todo.TodoStatus.TODO_COMPLETE
-                                && todo.getDeletedAt() == null)
+        //Entity -> Dto
+        var dtos = todos.getContent()
+                .stream()
                 .map(TodoDto::fromEntity)
-                .collect(Collectors.toList());
-        return new PageImpl<>(list, pageable, todos.getTotalElements());
-    }
+                .toList();
 
-    public Page<TodoDto> findBeforeTodos(Page<Todo> todos, Pageable pageable) {
-        var list = todos.getContent().stream()
-                .filter(todo
-                        -> todo.getStatus() == Todo.TodoStatus.TODO_BEFORE
-                                && todo.getDeletedAt() == null)
-                .map(TodoDto::fromEntity)
-                .collect(Collectors.toList());
-        return new PageImpl<>(list, pageable, todos.getTotalElements());
+        return new PageImpl<>( //page 인터페이스 구현 객체 만들어서 반환
+                dtos, //repo에서 나온 페이지의 정보를 넘겨야 함
+                todos.getPageable(), //offset+size 정보
+                todos.getTotalElements()
+        );
     }
-    //PageImpl<>(리ㅣ스트 데이터, pageable 객체, 전체 데이터 개수)
-    //Page 타입으로 감싸기 때문에 .. page에 대한 정보와 같이 보내려는 데이터를 .. 담아야 함 ... ㅋㅋ...ㅋ...
+    public record Requirement(
+            Optional<Todo.TodoStatus> status,
+            Optional<LocalDateTime> from,
+            Optional<LocalDateTime> to,
+            Pageable pageable
+    ){}
 }
